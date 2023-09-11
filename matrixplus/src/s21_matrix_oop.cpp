@@ -14,14 +14,14 @@ S21Matrix::S21Matrix() {
 // Параметризированный конструктор с количеством строк и столбцов
 
 S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
-  create_matrix();
+  CreateMatrix();
 }
 
 // Конструктор копирования
 
 S21Matrix::S21Matrix(const S21Matrix &other)
     : rows_(other.rows_), cols_(other.cols_) {
-  create_matrix();
+  CreateMatrix();
   for (int i = 0; i < rows_; i++) {
     for (int j = 0; j < cols_; j++) {
       this->matrix_[i][j] = other.matrix_[i][j];
@@ -39,7 +39,7 @@ S21Matrix::S21Matrix(S21Matrix &&other)
 
 // Деструктор
 
-S21Matrix::~S21Matrix() { remove_matrix(); }
+S21Matrix::~S21Matrix() { RemoveMatrix(); }
 
 // Получение Rows - рядов(сторк), и Cols - столбцов
 // Установка Rows - рядов(строк), и Cols - столбцов
@@ -106,7 +106,7 @@ bool S21Matrix::EqMatrix(const S21Matrix &other) {
 // Сложение матриц
 
 void S21Matrix::SumMatrix(const S21Matrix &other) {
-  check_for_sum_sub(rows_, cols_, other.rows_, other.cols_);
+  CheckForSumSub(rows_, cols_, other.rows_, other.cols_);
   for (int i = 0; i < rows_; i++) {
     for (int j = 0; j < cols_; j++) {
       matrix_[i][j] += other.matrix_[i][j];
@@ -117,7 +117,7 @@ void S21Matrix::SumMatrix(const S21Matrix &other) {
 // Вычитание матриц
 
 void S21Matrix::SubMatrix(const S21Matrix &other) {
-  check_for_sum_sub(rows_, cols_, other.rows_, other.cols_);
+  CheckForSumSub(rows_, cols_, other.rows_, other.cols_);
   for (int i = 0; i < rows_; i++) {
     for (int j = 0; j < cols_; j++) {
       matrix_[i][j] -= other.matrix_[i][j];
@@ -138,7 +138,7 @@ void S21Matrix::MulNumber(const double num) {
 // Умножение двух матриц
 
 void S21Matrix::MulMatrix(const S21Matrix &other) {
-  check_rows_cols(cols_, other.rows_);
+  CheckRowsCols(cols_, other.rows_);
   S21Matrix tmp(rows_, other.cols_);
   for (int i = 0; i < rows_; i++) {
     for (int j = 0; j < other.cols_; j++) {
@@ -164,12 +164,12 @@ S21Matrix S21Matrix::Transpose() {
 // Минор матрицы и матрица алгебраических дополнений
 
 S21Matrix S21Matrix::CalcComplements() {
-  check_rows_cols(rows_, cols_);
+  CheckRowsCols(rows_, cols_);
   S21Matrix result(rows_, cols_);
   if (rows_ == 1) {
     result.matrix_[0][0] = matrix_[0][0];
   } else {
-    this->minor_matrix(result);
+    this->MinorMatrix(result);
     for (int i = 0; i < result.rows_; i++) {
       for (int j = 0; j < result.cols_; j++) {
         result.matrix_[i][j] *= pow(-1, i + j);
@@ -182,7 +182,7 @@ S21Matrix S21Matrix::CalcComplements() {
 // Определитель матрицы
 
 double S21Matrix::Determinant() {
-  check_rows_cols(rows_, cols_);
+  CheckRowsCols(rows_, cols_);
   double determinant = 0;
   double multiplier = 1;
   if (rows_ == 1) {
@@ -192,7 +192,7 @@ double S21Matrix::Determinant() {
   } else {
     S21Matrix tmp((rows_ - 1), (cols_ - 1));
     for (int i = 0; i < rows_; i++) {
-      this->del_rc(tmp, 0, i);
+      this->DelRc(tmp, 0, i);
       determinant += multiplier * matrix_[0][i] * tmp.Determinant();
       multiplier *= -1;
     }
@@ -203,7 +203,7 @@ double S21Matrix::Determinant() {
 // Обратная матрица
 
 S21Matrix S21Matrix::InverseMatrix() {
-  check_rows_cols(rows_, cols_);
+  CheckRowsCols(rows_, cols_);
   double determinant = 0;
   determinant = this->Determinant();
   if (!determinant) throw std::out_of_range("The determinant must not be zero");
@@ -249,10 +249,10 @@ bool S21Matrix::operator==(const S21Matrix &other) {
 
 S21Matrix &S21Matrix::operator=(const S21Matrix &other) {
   if (this->rows_ != other.rows_ || this->cols_ != other.cols_) {
-    remove_matrix();
+    RemoveMatrix();
     rows_ = other.rows_;
     cols_ = other.cols_;
-    create_matrix();
+    CreateMatrix();
   }
   for (int i = 0; i < rows_; i++) {
     for (int j = 0; j < cols_; j++) {

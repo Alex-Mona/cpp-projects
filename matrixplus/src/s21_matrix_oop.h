@@ -5,16 +5,6 @@
 #include <iostream>
 
 class S21Matrix {
- private:
-  int rows_, cols_;
-  double **matrix_;
-  void create_matrix();
-  void remove_matrix();
-  void del_rc(S21Matrix &other, int num_i, int num_j);
-  void minor_matrix(S21Matrix &other);
-  void check_rows_cols(int rows, int cols);
-  void check_for_sum_sub(int rows1, int cols1, int rows2, int cols2);
-
   // Методы
 
  public:
@@ -78,6 +68,16 @@ class S21Matrix {
   S21Matrix &operator*=(const double &num);
   // Индексация по элементам матрицы (строка, колонка)
   double &operator()(const int row, const int col);
+
+ private:
+  int rows_, cols_;
+  double **matrix_;
+  void CreateMatrix();
+  void RemoveMatrix();
+  void DelRc(S21Matrix &other, int num_i, int num_j);
+  void MinorMatrix(S21Matrix &other);
+  void CheckRowsCols(int rows, int cols);
+  void CheckForSumSub(int rows1, int cols1, int rows2, int cols2);
 };
 
 #endif  // SRC_S21_MATRIX_OOP_H_
