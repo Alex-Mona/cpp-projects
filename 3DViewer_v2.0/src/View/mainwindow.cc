@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-
+// Доделать GStyle - переименовать методы
 namespace s21 {
 MainWindow::MainWindow(QWidget* parent)
     : QOpenGLWidget(parent), ui_(new Ui::MainWindow) {

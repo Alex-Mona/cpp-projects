@@ -1,6 +1,6 @@
 OS = $(shell uname)
 CC = gcc
-CFLAGS = -lstdc++ -lgtest -std=c++17 -Wall -Werror -Wextra
+CFLAGS = -lstdc++ -lgtest -std=c++17 -Wall -Werror -Wextra -lm
 
 TESTS = unit_tests
 BUILDTESTS = Test/unit_tests.cc
@@ -20,7 +20,7 @@ uninstall:
 	@rm -rf build*
 
 clean:
-	@/bin/rm -rf **/*.o *.a build *.gcno *gcda report *.info main *.dSYM *.out gcov_report $(TESTS) View/.qmake.stash View/3DViewer_v2-0.pro.user View/.qtc_clangd build-3DViewer_v2-0-Desktop_x86_darwin_generic_mach_o_64bit-Debug ../Archive_3DViewer_v2-0.tar.gz Archive_3DViewer_v2-0
+	@/bin/rm -rf **/*.o *.a build *.gcno *gcda report *.info main *.dSYM *.out gcov_report $(TESTS) View/.qmake.stash View/3DViewer_v2-0.pro.user View/.qtc_clangd build-3DViewer_v2-0-Desktop_x86_darwin_generic_mach_o_64bit-Debug ../Archive_3DViewer_v2-0.tar.gz Archive_3DViewer_v2-0 RESULT_VALGRIND.txt
 
 dvi:
 	@open ./dvi.html
@@ -49,7 +49,11 @@ build_tests: $(BUILDTESTS)
 	@${CC} $< Model/**/*.cc Controller/*.cc ${CFLAGS} -o $(TESTS)
 
 leaks: tests 
+ifeq ($(OS), Darwin)
 	@CK_FORK=no leaks --atExit -- ./$(TESTS)
+else
+	@CK_FORK=no valgrind --vgdb=no --leak-check=full --show-leak-kinds=all --tool=memcheck --track-origins=yes --verbose --log-file=RESULT_VALGRIND.txt ./$(TESTS)
+endif
 
 style:
 	@cp ../materials/linters/.clang-format .
