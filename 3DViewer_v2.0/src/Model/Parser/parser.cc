@@ -6,7 +6,8 @@ Parser::Parser() : count_vertexes_(0), count_polygons_(0), max_coordinate_(0) {}
 void Parser::Parse(const std::string& file_name, Figure& figure) {
   std::ifstream file(file_name);
   Clear();
-  if (file.is_open() && strcmp(&file_name[file_name.size() - 3], ".obj")) {
+  size_t last_dot = file_name.find_last_of('.');
+  if (file.is_open() && file_name.substr(last_dot) == ".obj") {
     std::string file_line;
     while (std::getline(file, file_line)) {
       if (ParseConditions(file_line, 'v')) {
@@ -21,49 +22,40 @@ void Parser::Parse(const std::string& file_name, Figure& figure) {
 
 bool Parser::ParseConditions(std::string& file_line, char type) {
   bool success = false;
-  while (!file_line.empty() && isspace(file_line.at(0))) {
+  while (!file_line.empty() && isspace(file_line.front())) {
     file_line.erase(file_line.begin());
   }
-  if (!file_line.empty() && file_line.at(0) == type) {
+  if (!file_line.empty() && file_line.front() == type && \
+      isspace(file_line.at(1))) {
     file_line.erase(file_line.begin());
-    if (!file_line.empty() && file_line.at(0) == ' ') {
-      success = true;
-    }
+    success = true;
   }
   return success;
 }
 
 void Parser::ParseVertexes(std::string& file_line) {
   std::vector<double> vec = ParseLine(file_line);
-  for (size_t i = 0; i < 3; i++) {
-    if (i < vec.size()) {
-      vertexes_.push_back(vec.at(i));
-    } else {
-      vertexes_.push_back(0);
-    }
+  for (size_t i = 0; i < 3; ++i) {
+    vertexes_.push_back(vec.at(i));
     double mc = fabs(vec.at(i));
-    if (mc > fabs(max_coordinate_)) {
+    if (mc > max_coordinate_) {
       max_coordinate_ = mc;
     }
   }
-  if (!vec.empty()) {
-    count_vertexes_++;
-  }
+  count_vertexes_++;
 }
 
 void Parser::ParseFacets(std::string& file_line) {
   int plus = 0;
   std::vector<double> vec = ParseLine(file_line);
-  if (!vec.empty()) {
-    vec.at(0) >= 0 ? plus = -1 : plus = count_vertexes_;
+  vec.at(0) >= 0 ? plus = -1 : plus = count_vertexes_;
   facets_.push_back(vec.at(0) + plus);
-    for (size_t i = 1; i < vec.size(); i++) {
-      facets_.push_back(vec.at(i) + plus);
-      facets_.push_back(vec.at(i) + plus);
-    }
-    facets_.push_back(vec.at(0) + plus);
-    count_polygons_++;
+  for (size_t i = 1; i < vec.size(); i++) {
+    facets_.push_back(vec.at(i) + plus);
+    facets_.push_back(vec.at(i) + plus);
   }
+  facets_.push_back(vec.at(0) + plus);
+  count_polygons_++;
 }
 
 int Parser::ParseEdges() {
@@ -82,14 +74,12 @@ int Parser::ParseEdges() {
 std::vector<double> Parser::ParseLine(std::string& file_line) {
   std::vector<double> res;
   while (!file_line.empty()) {
-    double num = 0;
-    sscanf(file_line.c_str(), "%lf", &num);
-    res.push_back(num);
     DelSpace(file_line);
-    while (!file_line.empty() && !isspace(file_line.at(0))) {
-      file_line.erase(file_line.begin());
-    }
-    DelSpace(file_line);
+    std::string num;
+    num = file_line.substr(0, file_line.find_first_of(' '));
+    if (!num.empty())
+      res.push_back(std::stod(num));
+    file_line.erase(0, num.size());
   }
   return res;
 }
