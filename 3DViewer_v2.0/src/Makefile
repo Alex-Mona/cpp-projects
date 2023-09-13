@@ -48,9 +48,9 @@ tests: build_tests
 
 build_tests: $(BUILDTESTS)
 ifeq ($(OS), Darwin)
-	@${CC} $< Model/**/*.cc Controller/*.cc ${CFLAGS} -o $(TESTS)
+	@$(CC) $< Model/**/*.cc Controller/*.cc $(CFLAGS) -o $(TESTS)
 else
-	@${CC} $< Model/**/*.cc Controller/*.cc ${CFLAGS} $(LINUX) -o $(TESTS)
+	@$(CC) $< Model/**/*.cc Controller/*.cc $(CFLAGS) $(LINUX) -o $(TESTS)
 endif
 
 leaks: tests 
