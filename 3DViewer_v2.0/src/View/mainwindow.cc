@@ -30,6 +30,11 @@ void MainWindow::initializeGL() {
 void MainWindow::resizeGL(int w, int h) {
   glViewport(0, 0, w, h);
   glMatrixMode(GL_PROJECTION);
+
+  float aspect = (float)w / (float)h;
+  glOrtho(-aspect, aspect, -1, 1, -1, 1);
+  glMatrixMode(GL_MODELVIEW);
+
   glLoadIdentity();
 }
 
