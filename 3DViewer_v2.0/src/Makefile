@@ -1,6 +1,7 @@
 OS = $(shell uname)
 CC = gcc
-CFLAGS = -lstdc++ -lgtest -std=c++17 -Wall -Werror -Wextra -lm
+CFLAGS = -lstdc++ -lgtest -std=c++17 -Wall -Werror -Wextra
+LINUX = -lsubunit -lrt -lpthread -lm -g
 
 TESTS = unit_tests
 BUILDTESTS = Test/unit_tests.cc
@@ -46,7 +47,11 @@ tests: build_tests
 	@./$(TESTS)
 
 build_tests: $(BUILDTESTS)
+ifeq ($(OS), Darwin)
 	@${CC} $< Model/**/*.cc Controller/*.cc ${CFLAGS} -o $(TESTS)
+else
+	@${CC} $< Model/**/*.cc Controller/*.cc ${CFLAGS} $(LINUX) -o $(TESTS)
+endif
 
 leaks: tests 
 ifeq ($(OS), Darwin)
