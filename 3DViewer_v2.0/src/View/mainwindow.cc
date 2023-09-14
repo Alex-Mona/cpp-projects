@@ -185,7 +185,7 @@ void MainWindow::on_horizontalScrollBar_sliderReleased() {
 // Color
 void MainWindow::SetColor(double value, void (MainWindow::*setFunc)(double),
                           QSpinBox* spinBox) {
-  (this->*setFunc)(value / 100.0);
+  (this->*setFunc)(value / 255.0);
   spinBox->setValue(value);
   update();
 }
